@@ -15,7 +15,7 @@ const routes = [
     props: true // 将路由参数作为 props 传给组件
   },
   {
-    path: '/slideshow/:id',
+    path: '/slideshow',
     name: 'Slideshow',
     component: Slideshow,
     meta: { requiresAuth: true }
