@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { getDirectory as getDirectoryApi } from '@/api/directory'
 import type { DirectoryItem } from '@/api/directory'
 import { Icon } from '@iconify/vue'
-import { isImage, isJpg, isPng } from '@/utils/checkFileType'
+import { isImage, isJpg, isPng, isVideo } from '@/utils/checkFileType'
 
 interface ImageItem extends DirectoryItem {
   src: string;
@@ -30,36 +30,48 @@ const getDirectory = async () => {
 
 getDirectory()
 
+const fileMap = computed(() => {
+  const videoList:ImageItem[] = []
+  const imageList:ImageItem[] = []
+  const folderList:DirectoryItem[] = []
+  const otherList:DirectoryItem[] = []
 
-const folderList = computed(() => {
-  return directoryList.value.filter(item => item.type === 'directory' && item.name !== '@eaDir')
+  directoryList.value.forEach((item, index) => {
+
+    // 文件夹
+    if (item.type === 'directory' && item.name !== '@eaDir') {
+      folderList.push(item)
+    } else if (isImage(item.name)) {
+      imageList.push({
+        ...item, 
+        src: `${baseUrl}${route.fullPath}/${item.name}`
+      })
+    } else if (isVideo(item.name)) {
+      videoList.push({
+        ...item,
+        src: `${baseUrl}${route.fullPath}/${item.name}`
+      })
+    } else {
+      otherList.push(item)
+    }
+
+  })
+  return {
+    videoList,
+    imageList,
+    otherList,
+    folderList,
+  }
 })
 
-const imageList = computed(() => {
-  return directoryList.value.filter(item => isImage(item.name)).map(item => ({...item, src: `${baseUrl}${route.fullPath}/${item.name}`}))
-})
 
 const previewSrcList = computed(() => {
-  return imageList.value.map(item => item.src)
+  return fileMap.value.imageList.map(item => item.src)
 }) 
 
-const otherList = computed(() => {
-  return directoryList.value.filter(item => item.type !== 'directory' && !isImage(item.name))
-})
-
-// function viewSlideshow(filename: string) {
-//   router.push({
-//     path: '/slideshow',
-//     query: {
-//       dir: route.fullPath,
-//       filename
-//     }
-//   })
-// }
 
 const jumpDirectory = (dirName:string) => {
   router.push(`${route.fullPath}/${dirName}`)
-  console.log(dirName)
 }
 
 function logout() {
@@ -82,7 +94,7 @@ function logout() {
       <!-- 文件夹列表 -->
       <div class="folder-list">
           <el-card class="folder-card"
-            v-for="item in folderList"
+            v-for="item in fileMap.folderList"
             @dblclick="jumpDirectory(item.name)" 
             shadow="hover" 
             style="cursor: pointer"
@@ -96,7 +108,7 @@ function logout() {
       <div class="image-list">
           <!-- 图片类型-->
           <el-card class="image-card"
-            v-for="(item, index) in imageList" :key="item.name"
+            v-for="(item, index) in fileMap.imageList" :key="item.name"
             shadow="hover" 
             style="cursor: pointer"
           >
