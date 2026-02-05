@@ -1,7 +1,5 @@
 import { request } from '@/utils/request'
 
-const API_DIR = '/apiDir'
-
 export interface DirectoryItem {
     name: string, 
     type: 'file' | 'directory' 
@@ -10,6 +8,6 @@ export interface DirectoryItem {
 
 
 export const getDirectory = (directory: string) => {
-    const url = `${API_DIR}${directory}/?json`
+    const url = `/api${directory}/?json`
     return request.get<DirectoryItem[]>(url).then(res => ({data: res.data}))
 }
