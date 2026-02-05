@@ -8,7 +8,7 @@ let currentVideo = null
 
 const handlePlay = (e) => {
     const target = e.target
-    if (currentVideo) {
+    if (currentVideo && currentVideo !== target) {
         currentVideo.pause()
     }
     currentVideo = target
