@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { login as apiLogin } from '@/api/auth'
+// import { login as apiLogin } from '@/api/auth'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
@@ -9,8 +9,12 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value)
 
   async function login(credentials: { username: string; password: string }) {
-    debugger
-    const res = await apiLogin(credentials)
+    // const res = await apiLogin(credentials)
+    const res = {
+      data: {
+        token: 'token_xxx'
+      }
+    }
     token.value = res.data.token
     username.value = credentials.username
   }

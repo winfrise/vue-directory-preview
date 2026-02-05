@@ -20,12 +20,16 @@ const baseUrl = import.meta.env.VITE_BASE_URL
 
 const route = useRoute()
 
-watch(() => route.fullPath, () => {
+const directoryPath = computed(() => {
+  return route.fullPath.split('/').slice(2).join('/')
+})
+
+watch(directoryPath, () => {
   getDirectory()
 })
 
 const getDirectory = async () => {
-  const res = await getDirectoryApi(route.fullPath)
+  const res = await getDirectoryApi(directoryPath.value)
   directoryList.value = res.data || []
 }
 
@@ -37,7 +41,7 @@ const fileMap = computed(() => {
   const folderList:DirectoryItem[] = []
   const otherList:DirectoryItem[] = []
 
-  directoryList.value.forEach((item, index) => {
+  directoryList.value.forEach((item) => {
 
     // 文件夹
     if (item.type === 'directory' && item.name !== '@eaDir') {
@@ -45,12 +49,12 @@ const fileMap = computed(() => {
     } else if (isImage(item.name)) {
       imageList.push({
         ...item, 
-        src: `${baseUrl}${route.fullPath}/${item.name}`
+        src: `${baseUrl}${directoryPath}/${item.name}`
       })
     } else if (isVideo(item.name)) {
       videoList.push({
         ...item,
-        src: `${baseUrl}${route.fullPath}/${item.name}`
+        src: `${baseUrl}${directoryPath}/${item.name}`
       })
     } else {
       otherList.push(item)
@@ -88,7 +92,7 @@ function logout() {
       <el-button @click="logout" type="danger" size="small">退出</el-button>
     </el-header>
     <el-main>
-      <p>路径: {{ decodeURIComponent(route.fullPath) }}</p>
+      <p>路径: {{ directoryPath }}</p>
       
       <el-empty v-if="directoryList.length === 0" description="暂无文件" />
 

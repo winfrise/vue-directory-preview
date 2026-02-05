@@ -1,7 +1,9 @@
 import { request } from '@/utils/request'
 
 export interface LoginResponse {
-  token: string
+  data: {
+    token: string
+  }
 }
 
 export const login = (data: { username: string; password: string }) => {

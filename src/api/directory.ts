@@ -1,5 +1,7 @@
 import { request } from '@/utils/request'
 
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 export interface DirectoryItem {
     name: string, 
     type: 'file' | 'directory' 
@@ -8,6 +10,6 @@ export interface DirectoryItem {
 
 
 export const getDirectory = (directory: string) => {
-    const url = `/api${directory}/?json`
+    const url = `${VITE_API_BASE_URL}/${directory}/?json`
     return request.get<DirectoryItem[]>(url).then(res => ({data: res.data}))
 }

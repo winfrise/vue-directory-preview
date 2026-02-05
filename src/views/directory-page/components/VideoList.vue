@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch, nextTick } from 'vue';
+import type { VideoItem } from '../types';
 const props = defineProps<{
-    list: object[]
+    list: VideoItem[]
 }>()
 
-let currentVideo = null
+let currentVideo:HTMLVideoElement | null = null
 
 const handlePlay = (e) => {
     const target = e.target
@@ -20,7 +20,7 @@ const handlePlay = (e) => {
     <!-- 视频列表 -->
     <div class="video-list">
         <el-card class="video-card"
-        v-for="(item, index) in list" :key="item.name"
+        v-for="(item) in props.list" :key="item.name"
         shadow="hover" 
         style="cursor: pointer"
         >
