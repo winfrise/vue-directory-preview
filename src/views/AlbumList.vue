@@ -7,6 +7,10 @@ import type { DirectoryItem } from '@/api/directory'
 import { Icon } from '@iconify/vue'
 import { isImage, isJpg, isPng } from '@/utils/checkFileType'
 
+interface ImageItem extends DirectoryItem {
+  src: string;
+}
+
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -27,15 +31,31 @@ const getDirectory = async () => {
 getDirectory()
 
 
-function viewSlideshow(filename: string) {
-  router.push({
-    path: '/slideshow',
-    query: {
-      dir: route.fullPath,
-      filename
-    }
-  })
-}
+const folderList = computed(() => {
+  return directoryList.value.filter(item => item.type === 'directory' && item.name !== '@eaDir')
+})
+
+const imageList = computed(() => {
+  return directoryList.value.filter(item => isImage(item.name)).map(item => ({...item, src: `${baseUrl}${route.fullPath}/${item.name}`}))
+})
+
+const previewSrcList = computed(() => {
+  return imageList.value.map(item => item.src)
+}) 
+
+const otherList = computed(() => {
+  return directoryList.value.filter(item => item.type !== 'directory' && !isImage(item.name))
+})
+
+// function viewSlideshow(filename: string) {
+//   router.push({
+//     path: '/slideshow',
+//     query: {
+//       dir: route.fullPath,
+//       filename
+//     }
+//   })
+// }
 
 const jumpDirectory = (dirName:string) => {
   router.push(`${route.fullPath}/${dirName}`)
@@ -55,28 +75,45 @@ function logout() {
       <el-button @click="logout" type="danger" size="small">退出</el-button>
     </el-header>
     <el-main>
-      <p>路径: /我的相册</p>
-      {{ decodeURIComponent(route.fullPath) }}
+      <p>路径: {{ decodeURIComponent(route.fullPath) }}</p>
+      
       <el-empty v-if="directoryList.length === 0" description="暂无文件" />
-      <el-row :gutter="20">
-        <el-col :span="6" v-for="item in directoryList" :key="item.name">
-          <el-card @dblclick="jumpDirectory(item.name)" v-if="item.type === 'directory'" shadow="hover" style="cursor: pointer">
-            <div>{{ item.name }}</div>
-          </el-card>
 
-          <!-- 图片类型-->
-          <el-card v-else-if="isImage(item.name)" 
-            @click="viewSlideshow(item.name)" 
+      <!-- 文件夹列表 -->
+      <div class="folder-list">
+          <el-card class="folder-card"
+            v-for="item in folderList"
+            @dblclick="jumpDirectory(item.name)" 
             shadow="hover" 
             style="cursor: pointer"
           >
-          <div style="width: 200px; height: 150px; ">
-            <img style="width: 100%; height: 100%;object-fit: contain;" :src="`${baseUrl}${route.fullPath}/${item.name}`" />
-          </div>
-           
+            <Icon class="icon" icon="lucide:folder"></Icon>
+            <div class="name">{{ item.name }}</div>
+          </el-card>
+      </div>
 
+      <!-- 图片列表 -->
+      <div class="image-list">
+          <!-- 图片类型-->
+          <el-card class="image-card"
+            v-for="(item, index) in imageList" :key="item.name"
+            shadow="hover" 
+            style="cursor: pointer"
+          >
+            <el-image class="img" 
+                  lazy 
+                  :src="item.src" 
+                  :zoom-rate="1.2"
+                  :max-scale="7"
+                  :min-scale="0.2"
+                  :preview-src-list="previewSrcList"
+                  show-progress
+                  :initial-index="index"
+                  fit="contain"
+            />
+           
             <template #footer>
-              <div>
+              <div class="info">
                 <Icon v-if="isJpg(item.name)" icon="tabler:file-type-jpg"></Icon>
                 <Icon v-else-if="isPng(item.name)" icon="tabler:file-type-jpeg"></Icon>
                 <Icon v-else icon="lucide:file-image"></Icon>
@@ -84,9 +121,51 @@ function logout() {
               </div>
             </template>
           </el-card>
-        </el-col>
-      </el-row>
+      </div>
     </el-main>
 
   </el-container>
 </template>
+
+<style lang="scss" scoped>
+.folder-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+.folder-card {
+  width: 200px;
+  height: 200px;
+  text-align: center;
+  margin: 7px 7px;
+  .icon {
+    font-size: 60px;
+  }
+  .name {
+    font-weight: bold;
+  }
+}
+
+.image-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+.image-card {
+  width: 300px;
+  height: 300px;
+  margin: 7px;
+  :deep(.el-card__body) {
+    padding: 0;
+  }
+  .img {
+    display: block;
+    width: 100%; 
+    height: 100%;
+    object-fit: contain;
+  }
+  .info {
+    display: flex;
+    align-items: center;
+    line-height: 1.2;
+  }
+}
+</style>
