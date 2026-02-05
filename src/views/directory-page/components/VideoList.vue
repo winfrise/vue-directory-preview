@@ -25,9 +25,12 @@ const handlePlay = (e) => {
         style="cursor: pointer"
         >
 
-        <video ref="videoRefs" :src="item.src" controls
+        <video ref="videoRefs" controls
             @play="handlePlay"
-        ></video>
+        >
+          <source :src="item.src" type="video/mp4">
+          <source :src="item.src" type="video/webm">
+        </video>
         
         <template #footer>
             <div class="info">

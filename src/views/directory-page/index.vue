@@ -42,19 +42,21 @@ const fileMap = computed(() => {
   const otherList:DirectoryItem[] = []
 
   directoryList.value.forEach((item) => {
-
+    if (['#recycle', '@eaDir'].includes(item.name)) {
+      return
+    }
     // 文件夹
-    if (item.type === 'directory' && item.name !== '@eaDir') {
+    if (item.type === 'directory') {
       folderList.push(item)
     } else if (isImage(item.name)) {
       imageList.push({
         ...item, 
-        src: `${baseUrl}${directoryPath}/${item.name}`
+        src: `${baseUrl}${directoryPath.value}/${item.name}`
       })
     } else if (isVideo(item.name)) {
       videoList.push({
         ...item,
-        src: `${baseUrl}${directoryPath}/${item.name}`
+        src: `${baseUrl}${directoryPath.value}/${item.name}`
       })
     } else {
       otherList.push(item)
@@ -92,12 +94,12 @@ function logout() {
       <el-button @click="logout" type="danger" size="small">退出</el-button>
     </el-header>
     <el-main>
-      <p>路径: {{ directoryPath }}</p>
+      <p>路径: {{ decodeURIComponent(directoryPath) }}</p>
       
       <el-empty v-if="directoryList.length === 0" description="暂无文件" />
 
       <!-- 文件夹列表 -->
-      <div class="folder-list">
+      <div class="list">
           <el-card class="folder-card"
             v-for="item in fileMap.folderList"
             @dblclick="jumpDirectory(item.name)" 
@@ -110,7 +112,7 @@ function logout() {
       </div>
 
       <!-- 图片列表 -->
-      <div class="image-list">
+      <div class="list">
           <!-- 图片类型-->
           <el-card class="image-card"
             v-for="(item, index) in fileMap.imageList" :key="item.name"
@@ -141,13 +143,20 @@ function logout() {
       </div>
 
       <VideoList :list="fileMap.videoList" />
+
+      <div class="list">
+        <el-card class="other-card" v-for="item in fileMap.otherList" :key="item.name">
+          {{ item.name }}
+        </el-card>
+      </div>
+    
     </el-main>
 
   </el-container>
 </template>
 
 <style lang="scss" scoped>
-.folder-list {
+.list {
   display: flex;
   flex-wrap: wrap;
 }
@@ -164,10 +173,6 @@ function logout() {
   }
 }
 
-.image-list {
-  display: flex;
-  flex-wrap: wrap;
-}
 .image-card {
   width: 300px;
   height: 300px;
@@ -186,5 +191,10 @@ function logout() {
     align-items: center;
     line-height: 1.2;
   }
+}
+
+.other-card {
+  width: 250px;
+  margin: 7px;
 }
 </style>
