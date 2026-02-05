@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '@/views/Login.vue'
-import AlbumList from '@/views/AlbumList.vue'
-import Slideshow from '@/views/Slideshow.vue'
 import { useAuthStore } from '@/stores/authStore'
 
 const routes = [
@@ -10,16 +8,10 @@ const routes = [
   {
     path: '/albums/:pathMatch(.*)*',
     name: 'AlbumList',
-    component: AlbumList,
+    component: import('@/views/directory-page/index.vue'),
     meta: { requiresAuth: true },
     props: true // 将路由参数作为 props 传给组件
   },
-  {
-    path: '/slideshow',
-    name: 'Slideshow',
-    component: Slideshow,
-    meta: { requiresAuth: true }
-  }
 ]
 
 const router = createRouter({

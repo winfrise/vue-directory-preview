@@ -6,6 +6,7 @@ import { getDirectory as getDirectoryApi } from '@/api/directory'
 import type { DirectoryItem } from '@/api/directory'
 import { Icon } from '@iconify/vue'
 import { isImage, isJpg, isPng, isVideo } from '@/utils/checkFileType'
+import VideoList from './components/VideoList.vue'
 
 interface ImageItem extends DirectoryItem {
   src: string;
@@ -134,6 +135,8 @@ function logout() {
             </template>
           </el-card>
       </div>
+
+      <VideoList :list="fileMap.videoList" />
     </el-main>
 
   </el-container>
