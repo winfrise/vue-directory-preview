@@ -54,7 +54,7 @@ const handlePlay = (e) => {
               style="cursor: pointer"
             >
 
-              <video ref="videoRefs" controls
+              <video ref="videoRefs" controls preload="metadata"
                   @play="handlePlay"
               >
                 <source :src="item.src" type="video/mp4">
