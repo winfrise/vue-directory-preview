@@ -8,11 +8,12 @@ export default defineConfig({
     assetsDir: 'static', // 对应 vue.config.js 的 assetsDir
     sourcemap: false, // 对应 vue.config.js 的 productionSourceMap
     rollupOptions: {
-      // 对应 vue.config.js 的 configureWebpack
       output: {
-        chunkFileNames: 'js/[name].[hash].js',
-        entryFileNames: 'js/[name].[hash].js',
-        assetFileNames: '[ext]/[name].[hash].[ext]'
+        // 简化路径格式，避免层级解析问题
+        chunkFileNames: 'static/js/[name]-[hash].js',
+        entryFileNames: 'static/js/[name]-[hash].js',
+        // 按类型归类资源，而非按后缀建文件夹
+        assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
       }
     }
   },

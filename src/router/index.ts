@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/albums/:pathMatch(.*)*',
     name: 'AlbumList',
-    component: import('@/views/directory-page/index.vue'),
+    component: () => import('@/views/directory-page/index.vue'),
     meta: { requiresAuth: true },
     props: true // 将路由参数作为 props 传给组件
   },
