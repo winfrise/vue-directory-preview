@@ -21,7 +21,7 @@ const baseUrl = import.meta.env.VITE_BASE_URL
 const route = useRoute()
 
 const directoryPath = computed(() => {
-  return route.fullPath.split('/').slice(2).join('/')
+  return '/' + route.fullPath.split('/').slice(2).join('/')
 })
 
 watch(directoryPath, () => {

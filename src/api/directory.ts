@@ -10,6 +10,10 @@ export interface DirectoryItem {
 
 
 export const getDirectory = (directory: string) => {
-    const url = `${VITE_API_BASE_URL}/${directory}/?json`
+    if (directory === '/') {
+        directory = ''
+    }
+
+    const url = `${VITE_API_BASE_URL}${directory}/?json`
     return request.get<DirectoryItem[]>(url).then(res => ({data: res.data}))
 }
